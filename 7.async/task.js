@@ -35,15 +35,17 @@ class AlarmClock {
     if(this.intervalId) {
       return;
     }
-    this.intervalId = setInterval(() => {
-      this.alarmCollection.forEach(clock => clock.time === this.getCurrentFormattedTime() && this.alarmCollection.canCall); 
-      if(this.intervalId === null){
-        this.alarmCollection.canCall = false;
-        return this.alarmCollection.callback();
-      }
-    },1000);    
-    
-    return;
+    const checkClock = () => {
+      const currentTime = this.getCurrentFormattedTime();
+      this.alarmCollection.forEach(clock => {
+          if (clock.time === currentTime && clock.canCall) {
+            clock.canCall = false;
+            clock.callback();
+          }
+      });
+    };
+    checkClock();
+    this.intervalId = setInterval(checkClock, 1000);
   }  
 
   stop() {    
